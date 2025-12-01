@@ -9,6 +9,9 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import './styles/animations.css';
+import SimulationPage from './pages/SimulationPage';
+
 
 // Komponen ScrollToTop
 const ScrollToTop = () => {
@@ -47,6 +50,7 @@ const App: React.FC = () => {
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/simulation" element={<SimulationPage />} />
 
               {/* Rute Privat */}
               <Route 
