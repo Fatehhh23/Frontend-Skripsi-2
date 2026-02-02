@@ -40,7 +40,7 @@ const App: React.FC = () => {
     <HashRouter>
       <AuthProvider>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-white transition-colors duration-300">
           <Navbar />
           <main className="flex-grow pt-16">
             <Routes>
@@ -53,13 +53,13 @@ const App: React.FC = () => {
               <Route path="/simulation" element={<SimulationPage />} />
 
               {/* Rute Privat */}
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
             </Routes>
           </main>

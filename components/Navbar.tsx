@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
   const { isAuthenticated, logout, user } = useAuth();
 
   // Pastikan file logo ada di folder: public/assets/logo-avatar.png
-  const LOGO_PATH = '/assets/logo-avatar.png'; 
+  const LOGO_PATH = '/assets/logo-avatar.png';
 
   const navLinks = [
     { name: 'Beranda', path: '/' },
@@ -24,22 +24,22 @@ const Navbar: React.FC = () => {
     <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
-          
+
           {/* === LOGO SECTION (Sesuai Request Struktur) === */}
           <Link to="/" className="flex items-center gap-3 group">
-            
+
             {/* Container Logo dengan Struktur Custom Anda */}
             {/* Ukuran disesuaikan ke w-12 h-12 (48px) agar muat di navbar. 
                 Jika ingin sedikit lebih besar, ubah ke w-14 h-14 atau w-16 h-16 */}
             <div className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 transition-transform duration-300 group-hover:scale-105">
-              
+
               {/* Efek Glow / Blur di belakang (Sesuai request) */}
               <div className="absolute inset-0 bg-blue-400 rounded-full blur-lg opacity-40 animate-pulse group-hover:opacity-60 transition-opacity"></div>
-              
+
               {/* Gambar Logo */}
-              <img 
-                src={LOGO_PATH} 
-                alt="AVATAR Logo" 
+              <img
+                src={LOGO_PATH}
+                alt="AVATAR Logo"
                 className="relative w-full h-full object-contain drop-shadow-lg z-10"
                 onError={(e) => {
                   // Fallback jika gambar tidak ditemukan
@@ -62,11 +62,10 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${
-                  isActive(link.path)
+                className={`text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${isActive(link.path)
                     ? 'text-blue-600 font-semibold'
                     : 'text-slate-500 hover:text-blue-600'
-                }`}
+                  }`}
               >
                 {link.name}
               </Link>
@@ -116,11 +115,10 @@ const Navbar: React.FC = () => {
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                  isActive(link.path)
+                className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${isActive(link.path)
                     ? 'bg-blue-50 text-blue-600'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 {link.name}
               </Link>
