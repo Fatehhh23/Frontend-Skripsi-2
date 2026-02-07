@@ -117,7 +117,7 @@ class TsunamiAPIService {
   async runSimulation(params: EarthquakeParams): Promise<TsunamiPredictionResponse> {
     try {
       const response: AxiosResponse<TsunamiPredictionResponse> = await this.api.post(
-        '/simulation/run',
+        '/v1/simulation/simulation/run',
         params
       );
       return response.data;
