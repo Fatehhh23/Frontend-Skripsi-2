@@ -1,8 +1,8 @@
 # Netlify Configuration for AVATAR Tsunami Frontend
 
 [build]
-  # Build command
-  command = "npm run build"
+  # Build command with increased memory limit for large ArcGIS SDK
+  command = "NODE_OPTIONS=--max_old_space_size=4096 npm run build"
   
   # Directory to publish (Vite default output)
   publish = "dist"
