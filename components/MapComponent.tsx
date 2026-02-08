@@ -155,74 +155,78 @@ const MapComponent: React.FC<MapComponentProps> = ({ tsunamiData }) => {
     <div className="relative w-full h-full">
       <div ref={mapDiv} className="w-full h-full" />
 
-      {/* Enhanced Legend - Top Right */}
-      <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md rounded-xl shadow-2xl border border-gray-200 overflow-hidden" style={{ zIndex: 100 }}>
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3">
-          <h3 className="font-bold text-white text-sm flex items-center gap-2">
+
+      {/* Zoom Controls - Bottom Right (Minimal & Compact) */}
+      <div className="absolute bottom-32 right-4 bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-gray-200 p-2" style={{ zIndex: 50 }}>
+        <div className="flex gap-1.5">
+          <button
+            onClick={() => view?.goTo({ zoom: (view.zoom || 8) + 1 })}
+            className="bg-white hover:bg-gray-100 text-gray-700 p-2 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md"
+            title="Zoom In"
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            Tingkat Bahaya Tsunami
-          </h3>
-        </div>
-        <div className="p-4 space-y-2.5">
-          <div className="flex items-center gap-3 hover:bg-gray-50 p-1.5 rounded transition-colors">
-            <div className="w-8 h-5 bg-yellow-400 rounded shadow-sm border border-yellow-500"></div>
-            <span className="text-sm text-gray-700 font-medium">&lt; 2m (Rendah)</span>
-          </div>
-          <div className="flex items-center gap-3 hover:bg-gray-50 p-1.5 rounded transition-colors">
-            <div className="w-8 h-5 bg-orange-400 rounded shadow-sm border border-orange-500"></div>
-            <span className="text-sm text-gray-700 font-medium">2-5m (Sedang)</span>
-          </div>
-          <div className="flex items-center gap-3 hover:bg-gray-50 p-1.5 rounded transition-colors">
-            <div className="w-8 h-5 bg-red-500 rounded shadow-sm border border-red-600"></div>
-            <span className="text-sm text-gray-700 font-medium">&gt; 5m (Tinggi)</span>
-          </div>
-          <div className="border-t border-gray-200 pt-2 mt-2">
-            <div className="flex items-center gap-3 hover:bg-gray-50 p-1.5 rounded transition-colors">
-              <div className="w-8 h-5 flex items-center justify-center">
-                <div className="w-4 h-4 bg-red-600 rounded-full shadow-lg border-2 border-white ring-2 ring-red-300"></div>
-              </div>
-              <span className="text-sm text-gray-700 font-medium">Epicenter Gempa</span>
-            </div>
-          </div>
+          </button>
+          <button
+            onClick={() => view?.goTo({ zoom: (view.zoom || 8) - 1 })}
+            className="bg-white hover:bg-gray-100 text-gray-700 p-2 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md"
+            title="Zoom Out"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
+            </svg>
+          </button>
+          <button
+            onClick={() => view?.goTo({
+              center: [105.8, -6.0],
+              zoom: 8,
+              tilt: 60,
+              heading: 0
+            })}
+            className="bg-white hover:bg-gray-100 text-gray-700 p-2 rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md"
+            title="Reset View"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      {/* Map Controls - Right Side */}
-      <div className="absolute top-4 left-4 flex flex-col gap-2" style={{ zIndex: 100 }}>
-        <button
-          onClick={() => view?.goTo({ zoom: (view.zoom || 8) + 1 })}
-          className="bg-white/95 hover:bg-white text-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 transition-all hover:shadow-xl"
-          title="Zoom In"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-        </button>
-        <button
-          onClick={() => view?.goTo({ zoom: (view.zoom || 8) - 1 })}
-          className="bg-white/95 hover:bg-white text-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 transition-all hover:shadow-xl"
-          title="Zoom Out"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-          </svg>
-        </button>
-        <button
-          onClick={() => view?.goTo({
-            center: [105.8, -6.0],
-            zoom: 8,
-            tilt: 60,
-            heading: 0
-          })}
-          className="bg-white/95 hover:bg-white text-gray-700 p-3 rounded-lg shadow-lg border border-gray-200 transition-all hover:shadow-xl"
-          title="Reset View"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-        </button>
+      {/* Legend - Bottom Full Width (Rectangular Box) */}
+      <div className="absolute bottom-0 left-0 right-0" style={{ zIndex: 50 }}>
+        <div className="bg-white/95 backdrop-blur-md border-t-2 border-gray-300 shadow-2xl">
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-2.5">
+            <h3 className="font-bold text-white text-sm flex items-center justify-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              Tingkat Bahaya Tsunami
+            </h3>
+          </div>
+          <div className="px-8 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-5 bg-yellow-400 rounded shadow-sm border border-yellow-500"></div>
+              <span className="text-sm text-gray-700 font-medium whitespace-nowrap">&lt; 2m (Rendah)</span>
+            </div>
+            <div className="w-px h-7 bg-gray-300"></div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-5 bg-orange-400 rounded shadow-sm border border-orange-500"></div>
+              <span className="text-sm text-gray-700 font-medium whitespace-nowrap">2-5m (Sedang)</span>
+            </div>
+            <div className="w-px h-7 bg-gray-300"></div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-5 bg-red-500 rounded shadow-sm border border-red-600"></div>
+              <span className="text-sm text-gray-700 font-medium whitespace-nowrap">&gt; 5m (Tinggi)</span>
+            </div>
+            <div className="w-px h-7 bg-gray-300"></div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-5 h-5 bg-red-600 rounded-full shadow-lg border-2 border-white ring-2 ring-red-300"></div>
+              <span className="text-sm text-gray-700 font-medium whitespace-nowrap">Epicenter Gempa</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

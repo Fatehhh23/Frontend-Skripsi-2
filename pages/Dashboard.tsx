@@ -19,7 +19,7 @@ const RealTimeView: React.FC = () => {
       const response = await apiService.getRealTimeEarthquakes();
       const now = new Date();
       setLastUpdated(now.toLocaleTimeString('id-ID'));
-      
+
       if (response.status === 'success' && response.earthquakes.length > 0) {
         const latest = response.earthquakes[0];
         setLiveData(latest);
@@ -123,18 +123,16 @@ const RealTimeView: React.FC = () => {
               <div className="h-20 bg-slate-100 rounded w-full animate-pulse"></div>
             ) : liveData ? (
               <div>
-                <div className={`p-4 rounded-lg border-l-4 mb-4 ${
-                  liveData.riskLevel === 'Bahaya' ? 'bg-red-50 border-red-500' : 
-                  liveData.riskLevel === 'Sedang' ? 'bg-yellow-50 border-yellow-500' : 
-                  'bg-green-50 border-green-500'
-                }`}>
+                <div className={`p-4 rounded-lg border-l-4 mb-4 ${liveData.riskLevel === 'Bahaya' ? 'bg-red-50 border-red-500' :
+                  liveData.riskLevel === 'Sedang' ? 'bg-yellow-50 border-yellow-500' :
+                    'bg-green-50 border-green-500'
+                  }`}>
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Status Peringatan</p>
-                      <p className={`text-xl font-bold ${
-                        liveData.riskLevel === 'Bahaya' ? 'text-red-700' :
+                      <p className={`text-xl font-bold ${liveData.riskLevel === 'Bahaya' ? 'text-red-700' :
                         liveData.riskLevel === 'Sedang' ? 'text-yellow-700' : 'text-green-700'
-                      }`}>{liveData.riskLevel === 'Bahaya' ? 'AWAS / SIAGA' : liveData.riskLevel === 'Sedang' ? 'WASPADA' : 'NORMAL / AMAN'}</p>
+                        }`}>{liveData.riskLevel === 'Bahaya' ? 'AWAS / SIAGA' : liveData.riskLevel === 'Sedang' ? 'WASPADA' : 'NORMAL / AMAN'}</p>
                     </div>
                     {liveData.riskLevel === 'Bahaya' ? (
                       <AlertTriangle className="h-8 w-8 text-red-500" />
@@ -238,49 +236,45 @@ const SimulationView: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Form Section */}
-        <div className="lg:col-span-1">
-          <SimulationForm onSubmit={handleSimulation} isLoading={loading} />
-        </div>
+      {/* Form Section - Above Map */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <SimulationForm onSubmit={handleSimulation} isLoading={loading} />
+      </div>
 
-        {/* Map Section */}
-        <div className="lg:col-span-2 relative">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="h-[600px] relative">
-              <MapComponent
-                tsunamiData={predictionData ? {
-                  epicenter: predictionData.epicenter,
-                  inundationZones: predictionData.inundationZones,
-                } : undefined}
-              />
-              
-              {loading && (
-                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                  <div className="bg-white rounded-lg p-8 text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-lg font-semibold text-gray-800">Memproses Simulasi...</p>
-                    <p className="text-sm text-gray-600 mt-2">Model SSL-ViT-CNN sedang memprediksi</p>
-                  </div>
-                </div>
-              )}
+      {/* Map Section - Full Width */}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="h-[700px] relative">
+          <MapComponent
+            tsunamiData={predictionData ? {
+              epicenter: predictionData.epicenter,
+              inundationZones: predictionData.inundationZones,
+            } : undefined}
+          />
 
-              {predictionData && (
-                <PredictionPanel
-                  data={{
-                    eta: predictionData.prediction.eta,
-                    maxWaveHeight: predictionData.prediction.maxWaveHeight,
-                    affectedArea: predictionData.prediction.affectedArea,
-                    tsunamiCategory: predictionData.prediction.tsunamiCategory,
-                    estimatedCasualties: predictionData.prediction.estimatedCasualties,
-                    impactZones: predictionData.impactZones,
-                  }}
-                  isVisible={showPanel}
-                  onClose={() => setShowPanel(false)}
-                />
-              )}
+          {loading && (
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-8 text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-lg font-semibold text-gray-800">Memproses Simulasi...</p>
+                <p className="text-sm text-gray-600 mt-2">Model SSL-ViT-CNN sedang memprediksi</p>
+              </div>
             </div>
-          </div>
+          )}
+
+          {predictionData && (
+            <PredictionPanel
+              data={{
+                eta: predictionData.prediction.eta,
+                maxWaveHeight: predictionData.prediction.maxWaveHeight,
+                affectedArea: predictionData.prediction.affectedArea,
+                tsunamiCategory: predictionData.prediction.tsunamiCategory,
+                estimatedCasualties: predictionData.prediction.estimatedCasualties,
+                impactZones: predictionData.impactZones,
+              }}
+              isVisible={showPanel}
+              onClose={() => setShowPanel(false)}
+            />
+          )}
         </div>
       </div>
 
@@ -316,18 +310,16 @@ const Dashboard: React.FC = () => {
           <div className="flex p-1 bg-slate-100 rounded-xl">
             <button
               onClick={() => setActiveTab('realtime')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center ${
-                activeTab === 'realtime' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-              }`}
+              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center ${activeTab === 'realtime' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}
             >
               <Activity className="w-4 h-4 mr-2" />
               Real-Time Monitor
             </button>
             <button
               onClick={() => setActiveTab('simulation')}
-              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center ${
-                activeTab === 'simulation' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-              }`}
+              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center ${activeTab === 'simulation' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+                }`}
             >
               <Play className="w-4 h-4 mr-2" />
               Simulasi Manual
