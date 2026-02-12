@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, LogIn } from 'lucide-react';
+import { Menu, X, LogOut, LogIn, Shield, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
@@ -63,18 +63,44 @@ const Navbar: React.FC = () => {
                 key={link.name}
                 to={link.path}
                 className={`text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${isActive(link.path)
-                    ? 'text-blue-600 font-semibold'
-                    : 'text-slate-500 hover:text-blue-600'
+                  ? 'text-blue-600 font-semibold'
+                  : 'text-slate-500 hover:text-blue-600'
                   }`}
               >
                 {link.name}
               </Link>
             ))}
 
+            {/* Admin Links (Only for admin users) */}
+            {isAuthenticated && user?.role === 'admin' && (
+              <>
+                <Link
+                  to="/admin"
+                  className={`text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-1 ${isActive('/admin')
+                    ? 'text-purple-600 font-semibold'
+                    : 'text-slate-500 hover:text-purple-600'
+                    }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </Link>
+                <Link
+                  to="/admin/users"
+                  className={`text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 flex items-center gap-1 ${isActive('/admin/users')
+                    ? 'text-purple-600 font-semibold'
+                    : 'text-slate-500 hover:text-purple-600'
+                    }`}
+                >
+                  <Users className="w-4 h-4" />
+                  Users
+                </Link>
+              </>
+            )}
+
             {/* Login / Logout Button */}
             {isAuthenticated ? (
               <div className="flex items-center gap-4 pl-4 border-l border-slate-200">
-                <span className="text-sm text-slate-600 hidden lg:block">Halo, {user?.name}</span>
+                <span className="text-sm text-slate-600 hidden lg:block">Halo, {user?.full_name || user?.username}</span>
                 <button
                   onClick={logout}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
@@ -116,18 +142,46 @@ const Navbar: React.FC = () => {
                 to={link.path}
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${isActive(link.path)
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`}
               >
                 {link.name}
               </Link>
             ))}
 
+            {/* Admin Links (Mobile - Only for admin users) */}
+            {isAuthenticated && user?.role === 'admin' && (
+              <>
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition-colors ${isActive('/admin')
+                    ? 'bg-purple-50 text-purple-600'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                >
+                  <Shield className="w-5 h-5" />
+                  Admin Dashboard
+                </Link>
+                <Link
+                  to="/admin/users"
+                  onClick={() => setIsOpen(false)}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl text-base font-medium transition-colors ${isActive('/admin/users')
+                    ? 'bg-purple-50 text-purple-600'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                >
+                  <Users className="w-5 h-5" />
+                  User Management
+                </Link>
+              </>
+            )}
+
             <div className="pt-4 mt-4 border-t border-slate-100">
               {isAuthenticated ? (
                 <div className="space-y-3">
-                  <div className="px-4 text-sm text-slate-500">Masuk sebagai {user?.name}</div>
+                  <div className="px-4 text-sm text-slate-500">Masuk sebagai {user?.full_name || user?.username}</div>
                   <button
                     onClick={() => {
                       logout();

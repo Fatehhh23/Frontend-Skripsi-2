@@ -8,7 +8,10 @@ import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminDashboard from './pages/AdminDashboard';
+import UserManagement from './pages/UserManagement';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import AdminRoute from './components/AdminRoute';
 import './styles/animations.css';
 import SimulationPage from './pages/SimulationPage';
 
@@ -59,6 +62,24 @@ const App: React.FC = () => {
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
+                }
+              />
+
+              {/* Rute Admin */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <AdminRoute>
+                    <UserManagement />
+                  </AdminRoute>
                 }
               />
             </Routes>

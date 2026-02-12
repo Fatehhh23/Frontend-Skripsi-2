@@ -135,7 +135,7 @@ class TsunamiAPIService {
   async getRealTimeEarthquakes(): Promise<RealTimeDataResponse> {
     try {
       const response: AxiosResponse<RealTimeDataResponse> = await this.api.get(
-        '/earthquakes/realtime'
+        '/v1/earthquakes/realtime'
       );
       return response.data;
     } catch (error: any) {

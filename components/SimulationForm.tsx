@@ -34,7 +34,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
 
     // Validasi depth (1 - 700 km)
     if (formData.depth < 1 || formData.depth > 700) {
-      newErrors.depth = 'Kedalaman harus antara 1 - 700 km';
+      newErrors.depth = 'Kedalaman harus antara 1 - 700';
     }
 
     // Validasi latitude (-90 to 90)
@@ -62,7 +62,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
       onSubmit(formData);
     }
@@ -73,7 +73,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
       ...prev,
       [field]: parseFloat(value) || 0,
     }));
-    
+
     // Clear error saat user mulai mengetik
     if (errors[field]) {
       setErrors(prev => {
@@ -125,9 +125,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
             max="9.5"
             value={formData.magnitude}
             onChange={(e) => handleChange('magnitude', e.target.value)}
-            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              errors.magnitude ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.magnitude ? 'border-red-500' : 'border-gray-300'
+              }`}
             disabled={isLoading}
           />
           {errors.magnitude && (
@@ -143,7 +142,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
         <div>
           <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
             <Layers className="w-4 h-4" />
-            Kedalaman (km)
+            Kedalaman (Meter)
           </label>
           <input
             type="number"
@@ -152,9 +151,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
             max="700"
             value={formData.depth}
             onChange={(e) => handleChange('depth', e.target.value)}
-            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-              errors.depth ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.depth ? 'border-red-500' : 'border-gray-300'
+              }`}
             disabled={isLoading}
           />
           {errors.depth && (
@@ -180,9 +178,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
               max="90"
               value={formData.latitude}
               onChange={(e) => handleChange('latitude', e.target.value)}
-              className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                errors.latitude ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.latitude ? 'border-red-500' : 'border-gray-300'
+                }`}
               disabled={isLoading}
             />
             {errors.latitude && (
@@ -205,9 +202,8 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
               max="180"
               value={formData.longitude}
               onChange={(e) => handleChange('longitude', e.target.value)}
-              className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                errors.longitude ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${errors.longitude ? 'border-red-500' : 'border-gray-300'
+                }`}
               disabled={isLoading}
             />
             {errors.longitude && (
@@ -244,10 +240,9 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
           type="submit"
           disabled={isLoading}
           className={
-            `w-full py-4 rounded-lg font-bold text-white text-lg transition-all duration-200 ${
-              isLoading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
+            `w-full py-4 rounded-lg font-bold text-white text-lg transition-all duration-200 ${isLoading
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
             }`
           }
         >
@@ -268,7 +263,7 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
       {/* Info Panel */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-xs text-blue-800">
-          <strong>Catatan:</strong> Simulasi ini menggunakan model SSL-ViT-CNN untuk prediksi cepat. 
+          <strong>Catatan:</strong> Simulasi ini menggunakan model SSL-ViT-CNN untuk prediksi cepat.
           Hasil simulasi bersifat estimasi dan untuk keperluan penelitian.
         </p>
       </div>

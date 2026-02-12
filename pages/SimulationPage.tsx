@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapComponent from '../components/MapComponent';
+import SimulationMap from '../components/SimulationMap';
 import SimulationForm from '../components/SimulationForm';
 import PredictionPanel from '../components/PredictionPanel';
 import ChartComponent from '../components/ChartComponent';
@@ -23,11 +23,11 @@ const SimulationPage: React.FC = () => {
       if (response.status === 'success') {
         setPredictionData(response.data);
         setShowPanel(true);
-        
+
         // Scroll ke hasil
         setTimeout(() => {
-          document.getElementById('results-section')?.scrollIntoView({ 
-            behavior: 'smooth' 
+          document.getElementById('results-section')?.scrollIntoView({
+            behavior: 'smooth'
           });
         }, 100);
       } else {
@@ -88,13 +88,13 @@ const SimulationPage: React.FC = () => {
           <div className="lg:col-span-2 relative">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <div className="h-[600px] relative">
-                <MapComponent
+                <SimulationMap
                   tsunamiData={predictionData ? {
                     epicenter: predictionData.epicenter,
                     inundationZones: predictionData.inundationZones,
                   } : undefined}
                 />
-                
+
                 {/* Loading Overlay */}
                 {isLoading && (
                   <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">

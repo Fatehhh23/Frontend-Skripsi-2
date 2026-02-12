@@ -1,47 +1,101 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface User {
-  email: string;
-  name: string;
-}
+import authService, { User, LoginData, RegisterData } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, name: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  login: (data: LoginData) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => void;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // Cek status login saat aplikasi dimuat (persistence)
+  // Initialize - check if user is already logged in
   useEffect(() => {
-    const storedUser = localStorage.getItem('avatar_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const initAuth = async () => {
+      if (authService.isAuthenticated()) {
+        try {
+          const profile = await authService.getProfile();
+          setUser(profile);
+        } catch (err) {
+          console.error('Failed to fetch profile:', err);
+          authService.logout();
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initAuth();
   }, []);
 
-  const login = (email: string, name: string) => {
-    const newUser = { email, name };
-    setUser(newUser);
-    localStorage.setItem('avatar_user', JSON.stringify(newUser));
-    navigate('/dashboard'); // Redirect ke dashboard setelah login
+  const login = async (data: LoginData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await authService.login(data);
+      setUser(response.user);
+
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (data: RegisterData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Register user
+      await authService.register(data);
+
+      // Auto-login after registration
+      await login({ email: data.email, password: data.password });
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('avatar_user');
-    navigate('/login'); // Redirect ke login setelah logout
+    authService.logout();
+  };
+
+  const clearError = () => {
+    setError(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        error,
+        login,
+        register,
+        logout,
+        clearError
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

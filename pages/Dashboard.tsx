@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Play, Database, RefreshCw, Radio, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import MapComponent from '../components/MapComponent';
+import { Activity, Play, Database, RefreshCw, Radio, Clock, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, Target, MapPin } from 'lucide-react';
+import RealtimeMap from '../components/RealtimeMap';
+import SimulationMap from '../components/SimulationMap';
 import SimulationForm from '../components/SimulationForm';
 import PredictionPanel from '../components/PredictionPanel';
 import ChartComponent from '../components/ChartComponent';
@@ -11,6 +12,8 @@ const RealTimeView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [liveData, setLiveData] = useState<any>(null);
+  const [allQuakes, setAllQuakes] = useState<any[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const fetchLiveData = async () => {
     setLoading(true);
@@ -21,8 +24,12 @@ const RealTimeView: React.FC = () => {
       setLastUpdated(now.toLocaleTimeString('id-ID'));
 
       if (response.status === 'success' && response.earthquakes.length > 0) {
-        const latest = response.earthquakes[0];
-        setLiveData(latest);
+        setAllQuakes(response.earthquakes);
+        // Only set liveData if we don't have a selection or if it's the first load
+        // Actually, let's reset to latest on refresh? Or keep selection?
+        // User might want to see latest updates. Let's reset to latest.
+        setLiveData(response.earthquakes[0]);
+        setSelectedIndex(0);
       }
     } catch (error) {
       console.error('Failed to fetch real-time data:', error);
@@ -44,6 +51,34 @@ const RealTimeView: React.FC = () => {
       setLoading(false);
     }
   };
+  const handlePrev = () => {
+    if (allQuakes.length === 0) return;
+    const newIndex = selectedIndex === 0 ? allQuakes.length - 1 : selectedIndex - 1;
+    setSelectedIndex(newIndex);
+    setLiveData(allQuakes[newIndex]);
+  };
+
+  const handleNext = () => {
+    if (allQuakes.length === 0) return;
+    const newIndex = selectedIndex === allQuakes.length - 1 ? 0 : selectedIndex + 1;
+    setSelectedIndex(newIndex);
+    setLiveData(allQuakes[newIndex]);
+  };
+
+  const handleMapSelect = (attributes: any) => {
+    if (!attributes || allQuakes.length === 0) return;
+    // Try to find by ID or location/timestamp match
+    // API returns 'id', accessible in attributes
+    const index = allQuakes.findIndex(q => q.id === attributes.id);
+    if (index !== -1) {
+      setSelectedIndex(index);
+      setLiveData(allQuakes[index]);
+    } else {
+      // Fallback if ID missing, maybe match lat/lon approximately?
+      // For now assume ID is consistent.
+    }
+  };
+
 
   useEffect(() => {
     fetchLiveData();
@@ -82,10 +117,25 @@ const RealTimeView: React.FC = () => {
         <div className="space-y-6">
           {/* Kartu Data Gempa */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center">
-              <Radio className="mr-2 h-5 w-5 text-red-500" />
-              Data Gempa Terkini
-            </h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center">
+                <Radio className="mr-2 h-5 w-5 text-red-500" />
+                Data Gempa Terkini
+              </h3>
+              {allQuakes.length > 1 && (
+                <div className="flex items-center space-x-2 bg-slate-100 rounded-lg p-1">
+                  <button onClick={handlePrev} className="p-1 hover:bg-white rounded shadow-sm text-slate-600 transition-all" title="Sebelumnya">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <span className="text-xs font-mono font-medium text-slate-500 w-12 text-center">
+                    {selectedIndex + 1} / {allQuakes.length}
+                  </span>
+                  <button onClick={handleNext} className="p-1 hover:bg-white rounded shadow-sm text-slate-600 transition-all" title="Selanjutnya">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
             {loading ? (
               <div className="space-y-4 animate-pulse">
                 <div className="h-4 bg-slate-100 rounded w-3/4"></div>
@@ -109,7 +159,7 @@ const RealTimeView: React.FC = () => {
                   </div>
                   <div className="bg-slate-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-slate-500">Kedalaman</p>
-                    <p className="text-2xl font-bold text-slate-900">{liveData.depth} <span className="text-sm font-normal text-slate-500">km</span></p>
+                    <p className="text-2xl font-bold text-slate-900">{liveData.depth} <span className="text-sm font-normal text-slate-500">Meter</span></p>
                   </div>
                 </div>
               </div>
@@ -155,11 +205,12 @@ const RealTimeView: React.FC = () => {
         </div>
 
         {/* Kolom Kanan: Map */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" style={{ height: '600px' }}>
-          <MapComponent
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-[calc(100vh-140px)] min-h-[600px]">
+          <RealtimeMap
             tsunamiData={liveData ? {
               epicenter: { latitude: liveData.latitude, longitude: liveData.longitude },
             } : undefined}
+            onEarthquakeSelect={handleMapSelect}
           />
         </div>
       </div>
@@ -244,7 +295,7 @@ const SimulationView: React.FC = () => {
       {/* Map Section - Full Width */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="h-[700px] relative">
-          <MapComponent
+          <SimulationMap
             tsunamiData={predictionData ? {
               epicenter: predictionData.epicenter,
               inundationZones: predictionData.inundationZones,
