@@ -14,6 +14,7 @@ export interface UserListItem {
     is_verified: boolean;
     created_at: string;
     last_login: string | null;
+    total_simulations: number;
 }
 
 export interface UserListResponse {
@@ -67,7 +68,8 @@ class AdminService {
     private baseURL: string;
 
     constructor() {
-        this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+        // @ts-ignore
+        this.baseURL = process.env.REACT_APP_API_URL || import.meta.env?.VITE_API_URL || `http://${window.location.hostname}:8000/api`;
 
         this.api = axios.create({
             baseURL: this.baseURL,
@@ -199,6 +201,18 @@ class AdminService {
             return response.data;
         } catch (error: any) {
             const message = error.response?.data?.detail || 'Failed to fetch simulations';
+            throw new Error(message);
+        }
+    }
+
+    /**
+     * Delete user simulation history
+     */
+    async deleteSimulationHistory(userId: string): Promise<void> {
+        try {
+            await this.api.delete(`/v1/admin/users/${userId}/simulations`);
+        } catch (error: any) {
+            const message = error.response?.data?.detail || 'Failed to delete user history';
             throw new Error(message);
         }
     }

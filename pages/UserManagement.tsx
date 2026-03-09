@@ -87,6 +87,23 @@ const UserManagement: React.FC = () => {
         }
     };
 
+    const handleDeleteHistory = async (userId: string, username: string) => {
+        if (!confirm(`Are you sure you want to delete ALL simulation history for user "${username}"?`)) {
+            return;
+        }
+
+        try {
+            setActionLoading(userId);
+            await adminService.deleteSimulationHistory(userId);
+            await loadUsers(); // Reload list to update counts
+            alert(`Simulation history for ${username} has been reset.`);
+        } catch (err: any) {
+            alert(`Failed to delete history: ${err.message}`);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     const totalPages = Math.ceil(totalUsers / pageSize);
 
     return (
@@ -162,6 +179,9 @@ const UserManagement: React.FC = () => {
                                         Role
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Total Sims
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Status
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -203,18 +223,21 @@ const UserManagement: React.FC = () => {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span
                                                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
-                                                            ? 'bg-purple-100 text-purple-800'
-                                                            : 'bg-gray-100 text-gray-800'
+                                                        ? 'bg-purple-100 text-purple-800'
+                                                        : 'bg-gray-100 text-gray-800'
                                                         }`}
                                                 >
                                                     {user.role.toUpperCase()}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-900 font-medium">{user.total_simulations}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
                                                 <span
                                                     className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${user.is_active
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-red-100 text-red-800'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-red-100 text-red-800'
                                                         }`}
                                                 >
                                                     {user.is_active ? (
@@ -252,8 +275,8 @@ const UserManagement: React.FC = () => {
                                                         onClick={() => handleToggleStatus(user.id, user.is_active, user.username)}
                                                         disabled={actionLoading === user.id}
                                                         className={`p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed ${user.is_active
-                                                                ? 'text-orange-600 hover:bg-orange-100'
-                                                                : 'text-green-600 hover:bg-green-100'
+                                                            ? 'text-orange-600 hover:bg-orange-100'
+                                                            : 'text-green-600 hover:bg-green-100'
                                                             }`}
                                                         title={user.is_active ? 'Deactivate' : 'Activate'}
                                                     >

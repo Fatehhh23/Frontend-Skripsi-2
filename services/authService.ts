@@ -16,6 +16,11 @@ export interface LoginData {
     password: string;
 }
 
+export interface SocialLoginData {
+    provider: 'google' | 'facebook' | 'apple';
+    token: string;
+}
+
 export interface User {
     id: string;
     email: string;
@@ -47,7 +52,8 @@ class AuthService {
     private baseURL: string;
 
     constructor() {
-        this.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+        // @ts-ignore
+        this.baseURL = process.env.REACT_APP_API_URL || import.meta.env?.VITE_API_URL || `http://${window.location.hostname}:8000/api`;
 
         this.api = axios.create({
             baseURL: this.baseURL,
@@ -75,7 +81,9 @@ class AuthService {
         this.api.interceptors.response.use(
             (response) => response,
             (error) => {
-                if (error.response?.status === 401) {
+                // Jangan redirect ke login jika error 401 berasal dari POST /login itu sendiri
+                const isLoginReq = error.config?.url?.includes('/login');
+                if (error.response?.status === 401 && !isLoginReq) {
                     // Unauthorized - clear token and redirect to login
                     this.clearToken();
                     window.location.href = '/#/login';
@@ -93,7 +101,14 @@ class AuthService {
             const response = await this.api.post<User>('/v1/auth/register', data);
             return response.data;
         } catch (error: any) {
-            const message = error.response?.data?.detail || 'Registration failed';
+            let message = 'Registration failed';
+            if (error.response?.data?.detail) {
+                if (Array.isArray(error.response.data.detail)) {
+                    message = error.response.data.detail.map((err: any) => err.msg).join(', ');
+                } else {
+                    message = error.response.data.detail;
+                }
+            }
             throw new Error(message);
         }
     }
@@ -111,7 +126,32 @@ class AuthService {
 
             return response.data;
         } catch (error: any) {
-            const message = error.response?.data?.detail || 'Login failed';
+            let message = 'Login failed';
+            if (error.response?.data?.detail) {
+                if (Array.isArray(error.response.data.detail)) {
+                    message = error.response.data.detail.map((err: any) => err.msg).join(', ');
+                } else {
+                    message = error.response.data.detail;
+                }
+            }
+            throw new Error(message);
+        }
+    }
+
+    /**
+     * Social Login
+     */
+    async socialLogin(data: SocialLoginData): Promise<LoginResponse> {
+        try {
+            const response = await this.api.post<LoginResponse>('/v1/auth/social-login', data);
+            const { access_token, user } = response.data;
+
+            // Store token in localStorage
+            this.setToken(access_token);
+
+            return response.data;
+        } catch (error: any) {
+            const message = error.response?.data?.detail || 'Social login failed';
             throw new Error(message);
         }
     }

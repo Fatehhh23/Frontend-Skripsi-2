@@ -51,18 +51,18 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, eta, maxHeight })
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis 
-              dataKey="time" 
+            <XAxis
+              dataKey="time"
               label={{ value: 'Waktu (menit)', position: 'insideBottom', offset: -5 }}
               stroke="#666"
             />
-            <YAxis 
+            <YAxis
               label={{ value: 'Tinggi Gelombang (m)', angle: -90, position: 'insideLeft' }}
               stroke="#666"
             />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 border: '1px solid #ccc',
                 borderRadius: '8px',
                 padding: '10px'
@@ -70,14 +70,14 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, eta, maxHeight })
               formatter={(value: number) => [`${value.toFixed(2)} m`, 'Tinggi Gelombang']}
               labelFormatter={(label) => `Waktu: ${label} menit`}
             />
-            <Legend 
+            <Legend
               wrapperStyle={{ paddingTop: '20px' }}
             />
-            <Line 
-              type="monotone" 
-              dataKey="waveHeight" 
+            <Line
+              type="monotone"
+              dataKey="waveHeight"
               name="Tinggi Gelombang"
-              stroke="#3b82f6" 
+              stroke="#3b82f6"
               strokeWidth={3}
               dot={{ fill: '#3b82f6', r: 4 }}
               activeDot={{ r: 6 }}
@@ -96,36 +96,36 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, eta, maxHeight })
           >
             <defs>
               <linearGradient id="colorWave" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1}/>
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis 
-              dataKey="time" 
+            <XAxis
+              dataKey="time"
               label={{ value: 'Waktu (menit)', position: 'insideBottom', offset: -5 }}
               stroke="#666"
             />
-            <YAxis 
+            <YAxis
               label={{ value: 'Tinggi (m)', angle: -90, position: 'insideLeft' }}
               stroke="#666"
             />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 border: '1px solid #ccc',
                 borderRadius: '8px'
               }}
               formatter={(value: number) => [`${value.toFixed(2)} m`, 'Tinggi']}
             />
-            <Area 
-              type="monotone" 
-              dataKey="waveHeight" 
+            <Area
+              type="monotone"
+              dataKey="waveHeight"
               name="Area Genangan"
-              stroke="#ef4444" 
+              stroke="#ef4444"
               strokeWidth={2}
-              fillOpacity={1} 
-              fill="url(#colorWave)" 
+              fillOpacity={1}
+              fill="url(#colorWave)"
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -146,7 +146,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, eta, maxHeight })
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div className="text-xs text-gray-600 font-medium">Rata-rata Tinggi</div>
           <div className="text-2xl font-bold text-gray-800 mt-1">
-            {data.length > 0 
+            {data.length > 0
               ? (data.reduce((sum, d) => sum + d.waveHeight, 0) / data.length).toFixed(2)
               : '0.00'
             } m
@@ -155,7 +155,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ data, eta, maxHeight })
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div className="text-xs text-gray-600 font-medium">Tinggi Min</div>
           <div className="text-2xl font-bold text-gray-800 mt-1">
-            {data.length > 0 
+            {data.length > 0
               ? Math.min(...data.map(d => d.waveHeight)).toFixed(2)
               : '0.00'
             } m

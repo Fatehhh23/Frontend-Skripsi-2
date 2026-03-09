@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useGoogleLogin } from '@react-oauth/google';
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState('');
-  const { login, isLoading } = useAuth();
+  const { login, socialLogin, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,18 +24,37 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
-    // Implementasi social login nanti
-  };
+  // Google Login Hook
+  const loginGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        await socialLogin({
+          provider: 'google',
+          token: tokenResponse.access_token,
+        });
+      } catch (err: any) {
+        setLocalError(err.message || 'Google login failed');
+      }
+    },
+    onError: () => setLocalError('Google login failed'),
+  });
+
+
 
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="max-w-md w-full space-y-8">
-          <div>
+          <div className="text-center sm:text-left">
+            {/* Mobile Logo */}
+            <img
+              src="/assets/logo-avatar.png"
+              alt="AVATAR Logo"
+              className="w-24 h-24 mx-auto sm:mx-0 mb-6 lg:hidden object-contain"
+            />
             <h2 className="text-4xl font-bold text-gray-900">Welcome Back</h2>
+            <p className="mt-2 text-sm text-gray-600">Please sign in to your account</p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -109,17 +130,7 @@ const Login: React.FC = () => {
             </div>
             <div className="flex justify-center gap-4">
               <button
-                onClick={() => handleSocialLogin('Facebook')}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                aria-label="Login with Facebook"
-              >
-                <svg className="w-8 h-8" viewBox="0 0 48 48">
-                  <path fill="#1877F2" d="M24 0C10.745 0 0 10.745 0 24s10.745 24 24 24 24-10.745 24-24S37.255 0 24 0z" />
-                  <path fill="#FFF" d="M26.5 38.5v-14h4.7l0.7-5.5h-5.4v-3.5c0-1.6 0.4-2.7 2.7-2.7h2.9V8.1c-0.5-0.1-2.2-0.2-4.2-0.2-4.1 0-7 2.5-7 7.1v4h-4.7V24.5h4.7v14H26.5z" />
-                </svg>
-              </button>
-              <button
-                onClick={() => handleSocialLogin('Google')}
+                onClick={() => loginGoogle()}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 aria-label="Login with Google"
               >
@@ -130,23 +141,18 @@ const Login: React.FC = () => {
                   <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
                 </svg>
               </button>
-              <button
-                onClick={() => handleSocialLogin('Apple')}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                aria-label="Login with Apple"
-              >
-                <svg className="w-8 h-8" viewBox="0 0 48 48">
-                  <path d="M38.71 20.07C38.37 20.17 32.72 22.71 32.78 29.54 32.85 37.67 39.69 40.43 40 40.52 39.94 40.75 38.82 44.49 36.24 48.31 34 51.61 31.66 54.89 28.06 54.96 24.56 55.03 23.44 52.82 19.49 52.82 15.55 52.82 14.28 54.89 11 54.96 7.45 55.03 4.84 51.37 2.6 48.07 -2.15 41.12 -6.42 28.19 -1.42 19.27 1.03 14.87 5.22 12 9.71 11.93 13.11 11.85 16.26 14.27 18.3 14.27 20.26 14.27 23.93 11.93 28 11.93 29.66 11.93 34.71 12.16 38.71 20.07ZM26.12 7.84C27.95 5.56 29.22 2.42 28.9 -0.71 26.25 -0.59 22.97 1.29 21.05 3.57 19.34 5.56 17.81 8.79 18.21 11.86 21.19 12.09 24.24 10.19 26.12 7.84Z" transform="scale(0.75) translate(8, 8)" fill="#000" />
-                </svg>
-              </button>
             </div>
           </div>
 
+          {/* Register Link */}
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-900">
-              Don't have an account?{' '}
-              <Link to="/register" className="font-semibold text-gray-900 hover:text-blue-600">
-                Sign Up
+            <p className="text-sm text-gray-600">
+              Belum punya akun?{' '}
+              <Link
+                to="/register"
+                className="font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+              >
+                Daftar Sekarang
               </Link>
             </p>
           </div>
@@ -157,7 +163,7 @@ const Login: React.FC = () => {
       <div className="hidden lg:flex lg:flex-1 bg-white items-center justify-center px-12">
         <div className="max-w-lg text-center">
           <img
-            src="/avatar-logo.png"
+            src="/assets/logo-avatar.png"
             alt="AVATAR Logo"
             className="w-full max-w-md mx-auto mb-6 object-contain"
           />

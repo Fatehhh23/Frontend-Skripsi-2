@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, LogOut, LogIn, Shield, Users } from 'lucide-react';
+import { Menu, X, LogOut, LogIn, Shield, Users, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar: React.FC = () => {
@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Beranda', path: '/' },
     { name: 'Tentang', path: '/about' },
-    ...(isAuthenticated ? [{ name: 'Dashboard', path: '/dashboard' }] : []),
+    { name: 'Dashboard', path: '/dashboard' },
     { name: 'Fax (Kontak)', path: '/contact' },
   ];
 
@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
               </>
             )}
 
-            {/* Login / Logout Button */}
+            {/* Auth Buttons */}
             {isAuthenticated ? (
               <div className="flex items-center gap-4 pl-4 border-l border-slate-200">
                 <span className="text-sm text-slate-600 hidden lg:block">Halo, {user?.full_name || user?.username}</span>
@@ -110,13 +110,22 @@ const Navbar: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-lg shadow-blue-600/30 transition-all hover:-translate-y-0.5"
-              >
-                <LogIn className="w-4 h-4" />
-                Masuk
-              </Link>
+              <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+                <Link
+                  to="/login"
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-full hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Daftar
+                </Link>
+              </div>
             )}
           </div>
 
@@ -194,14 +203,24 @@ const Navbar: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-base font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-600/20"
-                >
-                  <LogIn className="w-5 h-5" />
-                  Masuk Akun
-                </Link>
+                <div className="space-y-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 px-4 py-3 text-base font-medium text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 px-4 py-3 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all"
+                  >
+                    <UserPlus className="w-5 h-5" />
+                    Daftar Akun
+                  </Link>
+                </div>
               )}
             </div>
           </div>

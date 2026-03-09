@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SimulationMap from '../components/SimulationMap';
 import SimulationForm from '../components/SimulationForm';
 import PredictionPanel from '../components/PredictionPanel';
 import ChartComponent from '../components/ChartComponent';
 import apiService, { EarthquakeParams, TsunamiPredictionResponse } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const SimulationPage: React.FC = () => {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [predictionData, setPredictionData] = useState<TsunamiPredictionResponse['data'] | null>(null);
   const [showPanel, setShowPanel] = useState(false);
@@ -46,10 +50,37 @@ const SimulationPage: React.FC = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-8 px-4 shadow-lg">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Simulasi Prediksi Tsunami Selat Sunda</h1>
-          <p className="text-blue-100">
-            WebGIS dengan Integrasi SSL-ViT-CNN untuk Prediksi Real-Time
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Simulasi Prediksi Tsunami Selat Sunda</h1>
+              <p className="text-blue-100">
+                WebGIS dengan Integrasi SSL-ViT-CNN untuk Prediksi Real-Time
+              </p>
+            </div>
+            {/* Badge Status Akses */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 shrink-0 border border-white/30">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <div>
+                  <p className="text-xs font-semibold text-white">{user?.username || user?.email}</p>
+                  <p className="text-xs text-green-200">✅ Mode AI Tersedia</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 bg-amber-500/20 backdrop-blur-sm rounded-xl px-4 py-2 shrink-0 border border-amber-400/40">
+                <div>
+                  <p className="text-xs font-semibold text-amber-100">👤 Mode Tamu</p>
+                  <p className="text-xs text-amber-200">Mode AI Terkunci 🔒</p>
+                </div>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-xs bg-white text-blue-700 font-bold px-3 py-1.5 rounded-lg hover:bg-blue-50 transition shrink-0"
+                >
+                  Login
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

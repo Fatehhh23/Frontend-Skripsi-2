@@ -7,6 +7,7 @@ import Point from '@arcgis/core/geometry/Point';
 import Circle from '@arcgis/core/geometry/Circle';
 import SimpleMarkerSymbol from '@arcgis/core/symbols/SimpleMarkerSymbol';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
+import TextSymbol from '@arcgis/core/symbols/TextSymbol';
 import '@arcgis/core/assets/esri/themes/light/main.css'; // Import ArcGIS CSS
 
 interface RealtimeMapProps {
@@ -181,23 +182,12 @@ const RealtimeMap: React.FC<RealtimeMapProps> = ({ tsunamiData, onEarthquakeSele
                         });
                     }
 
-                    // 2. Add Monitoring Point / Epicenter
+                    // 2. Radar-style monitoring zone circle (no center point — avoids implying a physical station)
                     const monitoringPoint = new Point({
                         latitude: monitoringLat,
                         longitude: monitoringLon
                     });
 
-                    const monitoringSymbol = new SimpleMarkerSymbol({
-                        style: 'circle',
-                        color: monitoringColor, // DYNAMIC COLOR
-                        size: "24px",
-                        outline: {
-                            color: [255, 255, 255],
-                            width: 2
-                        }
-                    });
-
-                    // Add Radius Circle (Geofence Visual)
                     const radiusCircle = new Circle({
                         center: monitoringPoint,
                         radius: monitoringRadiusKm,
@@ -205,11 +195,11 @@ const RealtimeMap: React.FC<RealtimeMapProps> = ({ tsunamiData, onEarthquakeSele
                     });
 
                     const radiusSymbol = new SimpleFillSymbol({
-                        color: [0, 255, 255, 0.1], // Transparent Cyan
+                        color: [30, 100, 255, 0.04], // Very light blue fill
                         outline: {
-                            color: [0, 255, 255, 0.5],
-                            width: 1,
-                            style: "dash"
+                            color: [30, 100, 255, 0.7], // Solid blue outline
+                            width: 2,
+                            style: "solid"
                         }
                     });
 
@@ -219,16 +209,31 @@ const RealtimeMap: React.FC<RealtimeMapProps> = ({ tsunamiData, onEarthquakeSele
                     });
                     realtimeLayerRef.current.add(radiusGraphic);
 
-                    const monitoringGraphic = new Graphic({
-                        geometry: monitoringPoint,
-                        symbol: monitoringSymbol,
-                        attributes: {
-                            title: "Titik Pantau Selat Sunda",
-                            status: monitoringStatus,
-                            alert: alertMessage
-                        }
+                    // Text label on the circle edge — clarifies it's a virtual monitoring zone
+                    const labelPoint = new Point({
+                        latitude: monitoringLat + 1.78, // ~200km north offset for label placement
+                        longitude: monitoringLon
                     });
-                    realtimeLayerRef.current.add(monitoringGraphic);
+
+                    const labelSymbol = new TextSymbol({
+                        text: " Zona Pantau Selat Sunda (r=200km)",
+                        color: [30, 100, 255, 1],
+                        haloColor: [255, 255, 255, 0.9],
+                        haloSize: "2px",
+                        font: {
+                            size: 10,
+                            weight: "bold",
+                            family: "Inter, sans-serif"
+                        },
+                        verticalAlignment: "bottom",
+                        horizontalAlignment: "center"
+                    });
+
+                    const labelGraphic = new Graphic({
+                        geometry: labelPoint,
+                        symbol: labelSymbol
+                    });
+                    realtimeLayerRef.current.add(labelGraphic);
 
                     // 3. Add Earthquake Points (Standard Colors)
                     response.earthquakes.forEach((eq: any) => {
@@ -316,7 +321,7 @@ const RealtimeMap: React.FC<RealtimeMapProps> = ({ tsunamiData, onEarthquakeSele
                                             </div>
                                             <div>
                                                 <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; font-weight: 700; margin-bottom: 2px;">Kedalaman</div>
-                                                <div style="font-size: 12px; font-weight: 600; color: #334155;">{depthMeters} Meter</div>
+                                                <div style="font-size: 12px; font-weight: 600; color: #334155;">{depthMeters} KM</div>
                                             </div>
                                         </div>
 
@@ -376,27 +381,39 @@ const RealtimeMap: React.FC<RealtimeMapProps> = ({ tsunamiData, onEarthquakeSele
                 <div className="bg-[#ea580c] w-full py-2">
                     <h3 className="font-bold text-white text-sm flex items-center justify-center gap-2 tracking-wide uppercase">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                        Tingkat Bahaya Gempa
+                        Legenda Peta
                     </h3>
                 </div>
 
                 {/* Content Bar */}
-                <div className="bg-white px-4 py-4 md:px-8 md:py-6">
-                    <div className="max-w-4xl mx-auto flex items-center justify-between text-sm md:text-base">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-6 bg-yellow-400 rounded-sm border border-yellow-500 shadow-sm"></div>
+                <div className="bg-white px-4 py-3 md:px-8">
+                    <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
+
+                        {/* Earthquake Danger Levels */}
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-yellow-400 border border-yellow-500 shadow-sm flex-shrink-0"></div>
                             <span className="text-slate-700 font-semibold whitespace-nowrap">&lt; 5 SR (Rendah)</span>
                         </div>
-                        <div className="w-px h-8 bg-slate-200 mx-2"></div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-6 bg-orange-400 rounded-sm border border-orange-500 shadow-sm"></div>
+                        <div className="w-px h-6 bg-slate-200"></div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-orange-400 border border-orange-500 shadow-sm flex-shrink-0"></div>
                             <span className="text-slate-700 font-semibold whitespace-nowrap">5-7 SR (Sedang)</span>
                         </div>
-                        <div className="w-px h-8 bg-slate-200 mx-2"></div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-6 bg-red-600 rounded-sm border border-red-700 shadow-sm"></div>
+                        <div className="w-px h-6 bg-slate-200"></div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-red-600 border border-red-700 shadow-sm flex-shrink-0"></div>
                             <span className="text-slate-700 font-semibold whitespace-nowrap">&gt; 7 SR (Tinggi)</span>
                         </div>
+
+                        {/* Divider */}
+                        <div className="w-px h-6 bg-slate-300"></div>
+
+                        {/* Monitoring Zone */}
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full border-2 border-blue-500 bg-blue-50 flex-shrink-0"></div>
+                            <span className="text-slate-700 font-semibold whitespace-nowrap">Zona Pemantauan Selat Sunda (r=200km)</span>
+                        </div>
+
                     </div>
                 </div>
             </div>

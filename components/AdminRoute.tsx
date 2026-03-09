@@ -12,8 +12,16 @@ import { useAuth } from '../context/AuthContext';
  * - If authenticated and admin → render children
  */
 const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, isLoading } = useAuth();
     const location = useLocation();
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     // Not logged in → go to login
     if (!isAuthenticated) {

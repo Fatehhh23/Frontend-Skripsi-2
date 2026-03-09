@@ -56,8 +56,15 @@ const Register: React.FC = () => {
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="max-w-md w-full space-y-8">
-          <div>
+          <div className="text-center sm:text-left">
+            {/* Mobile Logo */}
+            <img
+              src="/assets/logo-avatar.png"
+              alt="AVATAR Logo"
+              className="w-24 h-24 mx-auto sm:mx-0 mb-6 lg:hidden object-contain"
+            />
             <h2 className="text-4xl font-bold text-gray-900">Create Your Account</h2>
+            <p className="mt-2 text-sm text-gray-600">Please enter your details</p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -221,7 +228,7 @@ const Register: React.FC = () => {
       <div className="hidden lg:flex lg:flex-1 bg-white items-center justify-center px-12">
         <div className="max-w-lg text-center">
           <img
-            src="/avatar-logo.png"
+            src="/assets/logo-avatar.png"
             alt="AVATAR Logo"
             className="w-full max-w-md mx-auto mb-6 object-contain"
           />

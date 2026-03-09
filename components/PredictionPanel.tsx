@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, Waves, MapPin, TrendingUp, Users } from 'lucide-react';
 
@@ -82,7 +83,7 @@ const PredictionPanel: React.FC<PredictionPanelProps> = ({ data, isVisible, onCl
   };
 
   return (
-    <div className="absolute top-4 left-4 bottom-36 w-[380px] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-y-auto animate-slide-in-left" style={{ zIndex: 1000 }}>
+    <div className="absolute top-4 left-4 right-4 md:right-auto bottom-36 md:w-[380px] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-y-auto animate-slide-in-left z-[1000]">
       {/* Header with Alert */}
       <div className={`${getCategoryColor(data.tsunamiCategory)} p-4 text-white`}>
         <div className="flex items-center justify-between">

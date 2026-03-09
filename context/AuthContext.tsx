@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import authService, { User, LoginData, RegisterData } from '../services/authService';
+import authService, { User, LoginData, RegisterData, SocialLoginData } from '../services/authService';
 
 interface AuthContextType {
   user: User | null;
@@ -8,6 +8,7 @@ interface AuthContextType {
   isLoading: boolean;
   error: string | null;
   login: (data: LoginData) => Promise<void>;
+  socialLogin: (data: SocialLoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   clearError: () => void;
@@ -74,6 +75,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const socialLogin = async (data: SocialLoginData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await authService.socialLogin(data);
+      setUser(response.user);
+
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Social login failed');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     authService.logout();
@@ -91,6 +109,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isLoading,
         error,
         login,
+        socialLogin,
         register,
         logout,
         clearError

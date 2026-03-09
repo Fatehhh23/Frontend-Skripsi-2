@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import UserManagement from './pages/UserManagement';
+import AdminMessages from './pages/AdminMessages';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AdminRoute from './components/AdminRoute';
 import './styles/animations.css';
@@ -27,8 +28,16 @@ const ScrollToTop = () => {
 
 // PERBAIKAN DI SINI: Menggunakan React.ReactNode menggantikan JSX.Element
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
@@ -38,54 +47,62 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const AppContent = () => {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
+  return (
+    <div className="flex flex-col min-h-screen bg-white transition-colors duration-300">
+      {!isAuthPage && <Navbar />}
+      <main className={`flex-grow ${!isAuthPage ? 'pt-16' : ''}`}>
+        <Routes>
+          {/* Rute Publik */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/simulation" element={<SimulationPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Rute Admin (Privat) */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <UserManagement />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/messages"
+            element={
+              <AdminRoute>
+                <AdminMessages />
+              </AdminRoute>
+            }
+          />
+        </Routes>
+      </main>
+      {!isAuthPage && <Footer />}
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <HashRouter>
       <AuthProvider>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen bg-white transition-colors duration-300">
-          <Navbar />
-          <main className="flex-grow pt-16">
-            <Routes>
-              {/* Rute Publik */}
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/simulation" element={<SimulationPage />} />
-
-              {/* Rute Privat */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Rute Admin */}
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminDashboard />
-                  </AdminRoute>
-                }
-              />
-              <Route
-                path="/admin/users"
-                element={
-                  <AdminRoute>
-                    <UserManagement />
-                  </AdminRoute>
-                }
-              />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppContent />
       </AuthProvider>
     </HashRouter>
   );

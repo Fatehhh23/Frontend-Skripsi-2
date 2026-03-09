@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Activity, BarChart3, TrendingUp } from 'lucide-react';
+import { Users, Activity, BarChart3, TrendingUp, Mail } from 'lucide-react';
 import adminService, { SystemStats } from '../services/adminService';
 
 const AdminDashboard: React.FC = () => {
@@ -134,6 +134,17 @@ const AdminDashboard: React.FC = () => {
                                 <div>
                                     <h3 className="font-semibold text-gray-900">Manage Users</h3>
                                     <p className="text-sm text-gray-600">View and manage all user accounts</p>
+                                </div>
+                            </Link>
+
+                            <Link
+                                to="/admin/messages"
+                                className="flex items-center p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-all"
+                            >
+                                <Mail className="h-6 w-6 text-indigo-600 mr-3" />
+                                <div>
+                                    <h3 className="font-semibold text-gray-900">Contact Messages</h3>
+                                    <p className="text-sm text-gray-600">View and respond to user messages</p>
                                 </div>
                             </Link>
 

@@ -159,7 +159,7 @@ const RealTimeView: React.FC = () => {
                   </div>
                   <div className="bg-slate-50 p-3 rounded-lg text-center">
                     <p className="text-xs text-slate-500">Kedalaman</p>
-                    <p className="text-2xl font-bold text-slate-900">{liveData.depth} <span className="text-sm font-normal text-slate-500">Meter</span></p>
+                    <p className="text-2xl font-bold text-slate-900">{liveData.depth} <span className="text-sm font-normal text-slate-500">KM</span></p>
                   </div>
                 </div>
               </div>
@@ -205,7 +205,7 @@ const RealTimeView: React.FC = () => {
         </div>
 
         {/* Kolom Kanan: Map */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-[calc(100vh-140px)] min-h-[600px]">
+        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-[500px] lg:h-[calc(100vh-140px)] min-h-[500px]">
           <RealtimeMap
             tsunamiData={liveData ? {
               epicenter: { latitude: liveData.latitude, longitude: liveData.longitude },
@@ -294,7 +294,7 @@ const SimulationView: React.FC = () => {
 
       {/* Map Section - Full Width */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="h-[700px] relative">
+        <div className="h-[500px] lg:h-[700px] relative">
           <SimulationMap
             tsunamiData={predictionData ? {
               epicenter: predictionData.epicenter,
