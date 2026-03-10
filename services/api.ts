@@ -89,6 +89,7 @@ class TsunamiAPIService {
       timeout: 30000, // 30 detik timeout
       headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
       },
     });
 
