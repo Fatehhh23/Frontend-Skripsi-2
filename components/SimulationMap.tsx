@@ -16,12 +16,19 @@ interface SimulationMapProps {
             height: number;
         }>;
     };
+    onMapClick?: (lat: number, lon: number) => void;
 }
 
-const SimulationMap: React.FC<SimulationMapProps> = ({ tsunamiData }) => {
+const SimulationMap: React.FC<SimulationMapProps> = ({ tsunamiData, onMapClick }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const [view, setView] = useState<SceneView | null>(null);
     const graphicsLayerRef = useRef<GraphicsLayer | null>(null);
+    const clickMarkerLayerRef = useRef<GraphicsLayer | null>(null);
+    const onMapClickRef = useRef(onMapClick);
+
+    useEffect(() => {
+        onMapClickRef.current = onMapClick;
+    }, [onMapClick]);
 
     useEffect(() => {
         if (!mapDiv.current) return;
@@ -30,11 +37,15 @@ const SimulationMap: React.FC<SimulationMapProps> = ({ tsunamiData }) => {
         const graphicsLayer = new GraphicsLayer({ title: "Tsunami Simulation" });
         graphicsLayerRef.current = graphicsLayer;
 
+        // Layer for Click Marker
+        const clickMarkerLayer = new GraphicsLayer({ title: "Selected Location" });
+        clickMarkerLayerRef.current = clickMarkerLayer;
+
         // Initialize Map
         const map = new Map({
             basemap: 'satellite',
             ground: 'world-elevation',
-            layers: [graphicsLayer],
+            layers: [graphicsLayer, clickMarkerLayer],
         });
 
         // Initialize SceneView
@@ -63,7 +74,36 @@ const SimulationMap: React.FC<SimulationMapProps> = ({ tsunamiData }) => {
 
         setView(sceneView);
 
+        const clickHandle = sceneView.on("click", (event) => {
+            if (event.mapPoint) {
+                const lat = event.mapPoint.latitude;
+                const lon = event.mapPoint.longitude;
+
+                // Visual feedback marker
+                if (clickMarkerLayerRef.current) {
+                    clickMarkerLayerRef.current.removeAll();
+                    const markerSymbol = new SimpleMarkerSymbol({
+                        style: 'cross',
+                        color: [255, 255, 0, 1],
+                        size: '16px',
+                        outline: {
+                            color: [0, 0, 0],
+                            width: 2,
+                        },
+                    });
+                    const markerPoint = new Point({ latitude: lat, longitude: lon });
+                    const markerGraphic = new Graphic({ geometry: markerPoint, symbol: markerSymbol });
+                    clickMarkerLayerRef.current.add(markerGraphic);
+                }
+
+                if (onMapClickRef.current) {
+                    onMapClickRef.current(lat, lon);
+                }
+            }
+        });
+
         return () => {
+            clickHandle.remove();
             sceneView.destroy();
         };
     }, []);
@@ -74,6 +114,9 @@ const SimulationMap: React.FC<SimulationMapProps> = ({ tsunamiData }) => {
 
         // Clear previous graphics
         graphicsLayerRef.current.removeAll();
+        if (clickMarkerLayerRef.current) {
+            clickMarkerLayerRef.current.removeAll();
+        }
 
         // 1. Show Epicenter (Purple/Danger)
         if (tsunamiData.epicenter) {

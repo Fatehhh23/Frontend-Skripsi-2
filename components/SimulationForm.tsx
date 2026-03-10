@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertCircle, MapPin, Activity, Layers, Lock, LogIn, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -14,9 +14,10 @@ interface EarthquakeParams {
 interface SimulationFormProps {
   onSubmit: (params: EarthquakeParams) => void;
   isLoading?: boolean;
+  selectedLocation?: { lat: number; lon: number } | null;
 }
 
-const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = false }) => {
+const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = false, selectedLocation }) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -31,6 +32,16 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
 
   const [errors, setErrors] = useState<Partial<Record<keyof EarthquakeParams, string>>>({});
 
+  useEffect(() => {
+    if (selectedLocation) {
+      setFormData(prev => ({
+        ...prev,
+        mode: 'HEURISTIC', // Switch ke mode manual/umum agar input koordinat bisa dipakai bebas
+        latitude: parseFloat(selectedLocation.lat.toFixed(4)),
+        longitude: parseFloat(selectedLocation.lon.toFixed(4))
+      }));
+    }
+  }, [selectedLocation]);
 
   // Validasi input
   const validateForm = (): boolean => {
@@ -459,11 +470,11 @@ const SimulationForm: React.FC<SimulationFormProps> = ({ onSubmit, isLoading = f
             <div className="bg-slate-50 rounded-xl p-4 mb-6 text-xs space-y-2">
               <div className="flex items-center gap-2">
                 <span className="w-20 font-semibold text-slate-500">Tamu</span>
-                <span className="flex-1 text-slate-600">✅ Mode Umum (Heuristik, estimasi)</span>
+                <span className="flex-1 text-slate-600">Mode Umum (Heuristik, estimasi)</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-20 font-semibold text-blue-600">Member</span>
-                <span className="flex-1 text-blue-700">🚀 Mode AI + Mode Umum (tanpa batas)</span>
+                <span className="flex-1 text-blue-700">Mode AI + Mode Umum (tanpa batas)</span>
               </div>
             </div>
 

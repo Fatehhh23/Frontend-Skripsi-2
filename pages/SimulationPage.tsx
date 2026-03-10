@@ -14,6 +14,11 @@ const SimulationPage: React.FC = () => {
   const [predictionData, setPredictionData] = useState<TsunamiPredictionResponse['data'] | null>(null);
   const [showPanel, setShowPanel] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lon: number } | null>(null);
+
+  const handleMapClick = (lat: number, lon: number) => {
+    setSelectedLocation({ lat, lon });
+  };
 
   const handleSimulation = async (params: EarthquakeParams) => {
     setIsLoading(true);
@@ -112,7 +117,7 @@ const SimulationPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Form Section */}
           <div className="lg:col-span-1">
-            <SimulationForm onSubmit={handleSimulation} isLoading={isLoading} />
+            <SimulationForm onSubmit={handleSimulation} isLoading={isLoading} selectedLocation={selectedLocation} />
           </div>
 
           {/* Map Section */}
@@ -124,6 +129,7 @@ const SimulationPage: React.FC = () => {
                     epicenter: predictionData.epicenter,
                     inundationZones: predictionData.inundationZones,
                   } : undefined}
+                  onMapClick={handleMapClick}
                 />
 
                 {/* Loading Overlay */}

@@ -224,6 +224,11 @@ const SimulationView: React.FC = () => {
   const [predictionData, setPredictionData] = useState<any>(null);
   const [showPanel, setShowPanel] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lon: number } | null>(null);
+
+  const handleMapClick = (lat: number, lon: number) => {
+    setSelectedLocation({ lat, lon });
+  };
 
   const handleSimulation = async (params: EarthquakeParams) => {
     setLoading(true);
@@ -289,7 +294,7 @@ const SimulationView: React.FC = () => {
 
       {/* Form Section - Above Map */}
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <SimulationForm onSubmit={handleSimulation} isLoading={loading} />
+        <SimulationForm onSubmit={handleSimulation} isLoading={loading} selectedLocation={selectedLocation} />
       </div>
 
       {/* Map Section - Full Width */}
@@ -300,6 +305,7 @@ const SimulationView: React.FC = () => {
               epicenter: predictionData.epicenter,
               inundationZones: predictionData.inundationZones,
             } : undefined}
+            onMapClick={handleMapClick}
           />
 
           {loading && (
